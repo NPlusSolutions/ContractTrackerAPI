@@ -1,0 +1,2 @@
+forever --watch --watchDirectory ./ --watchIgnore *.log ./
+forever -w Server.js
