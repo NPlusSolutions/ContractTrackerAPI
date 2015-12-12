@@ -279,10 +279,21 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
             }
         });
     });
-
+    router.get("/moneyexpense/:user_id/:money_id",function(req,res){
+            var query = "SELECT * FROM ?? WHERE ??=? and ??=?";
+            var table = ["expense_master","user_id",req.params.user_id,"money_id",req.params.money_id];
+            query = mysql.format(query,table);
+            connection.query(query,function(err,rows){
+                if(err) {
+                    res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+                } else {
+                    res.json({"Error" : false, "Message" : "Success", "Incomes" : rows});
+                }
+            });
+    });
     router.post("/expenses",function(req,res){
-        var query = "INSERT INTO ??(??,??) VALUES (?,?)";
-        var table = ["expense_master","user_id","expense_name",req.body.user_id,req.body.expense_name];
+        var query = "INSERT INTO ??(??,??,??,??) VALUES (?,?,?,?)";
+        var table = ["expense_master","user_id","description","money_id","date",req.body.user_id,req.body.description,req.body.money_id,req.body.date];
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
             if(err) {
@@ -294,8 +305,8 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
     });
 
     router.put("/expenses",function(req,res){
-        var query = "UPDATE ?? SET ?? = ? WHERE ?? = ?";
-        var table = ["expense_master","expense_name",req.body.expense_name,"expense_id",req.body.expense_id];
+        var query = "UPDATE ?? SET ?? = ?,?? = ?,?? = ? WHERE ?? = ?";
+        var table = ["expense_master","description",req.body.description,"money_id",req.body.money_id,"date",req.body.date,"expense_id",req.body.expense_id];
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
             if(err) {
@@ -446,10 +457,21 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
             }
         });
     });
-
+    router.get("/moneyincome/:user_id/:money_id",function(req,res){
+            var query = "SELECT * FROM ?? WHERE ??=? and ??=?";
+            var table = ["income_master","user_id",req.params.user_id,"money_id",req.params.money_id];
+            query = mysql.format(query,table);
+            connection.query(query,function(err,rows){
+                if(err) {
+                    res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+                } else {
+                    res.json({"Error" : false, "Message" : "Success", "Incomes" : rows});
+                }
+            });
+    });
     router.post("/incomes",function(req,res){
-        var query = "INSERT INTO ??(??,??) VALUES (?,?)";
-        var table = ["income_master","user_id","income_name",req.body.user_id,req.body.income_name];
+        var query = "INSERT INTO ??(??,??,??,??) VALUES (?,?,?,?)";
+        var table = ["income_master","user_id","money_id","description","date",req.body.user_id,req.body.money_id,req.body.description,req.body.date];
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
             if(err) {
@@ -461,8 +483,8 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
     });
 
     router.put("/incomes",function(req,res){
-        var query = "UPDATE ?? SET ?? = ? WHERE ?? = ?";
-        var table = ["income_master","income_name",req.body.income_name,"income_id",req.body.income_id];
+        var query = "UPDATE ?? SET ?? = ?,??=?,??=? WHERE ?? = ?";
+        var table = ["income_master","description",req.body.description,"money_id",req.body.money_id,"date",req.body.date,"income_id",req.body.income_id];
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
             if(err) {
