@@ -20,7 +20,12 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
             if(err) {
                 res.json({"Error" : true, "Message" : "Error executing MySQL query"});
             } else {
-                res.json({"Error" : false, "Message" : "Success", "Users" :  rows});
+                if(rows.length>0)
+                {
+                    res.json({"Error" : false, "Message" : "Success", "Users" :  rows});
+                }else{
+                    res.json({"Error" : true, "Message" : "Invalid Credentials"});
+                }
             }
         });
     });
@@ -38,26 +43,26 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
     });
     router.get("/users/:user_id",function(req,res){
         var query = "SELECT * FROM ?? WHERE ??=?";
-        var table = ["user_login","user_id",req.params.user_id];
+        var table = ["user","user_id",req.params.user_id];
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
             if(err) {
                 res.json({"Error" : true, "Message" : "Error executing MySQL query"});
             } else {
-                res.json({"Error" : false, "Message" : "Success", "users" : rows});
+                res.json({"Error" : false, "Message" : "Success", "Users" : rows});
             }
         });
     });
 
     router.post("/users",function(req,res){
         var query = "INSERT INTO ??(??,??,??) VALUES (?,?,?)";
-        var table = ["user","email","password","user_type_id",req.body.email,req.body.password,req.body.userTypeId];
+        var table = ["user","email","password","user_type_id",req.body.email,req.body.password,req.body.user_type_id];
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
             if(err) {
                 res.json({"Error" : true, "Message" : "Error executing MySQL query"});
             } else {
-                res.json({"Error" : false, "Message" : "User Added !"});
+                res.json({"Error" : false, "Message" : "User added successfully"});
             }
         });
     });
@@ -70,7 +75,7 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
             if(err) {
                 res.json({"Error" : true, "Message" : "Error executing MySQL query"});
             } else {
-                res.json({"Error" : false, "Message" : "Updated the password for email "+req.body.email});
+                res.json({"Error" : false, "Message" : "User updated successfully"});
             }
         });
     });
@@ -408,8 +413,8 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
     // POs
 
     router.post("/po",function(req,res){
-        var query = "INSERT INTO ??(??,??,??,??,??,??) VALUES (?,?,?,?,?,?)";
-        var table = ["po_master","user_id","company_id","state_id","po_number","po_amount","po_time_limit",req.body.user_id,req.body.company_id,req.body.state_id,req.body.po_number,req.body.po_number,req.body.po_amount];
+        var query = "INSERT INTO ??(??,??,??,??,??,??,??) VALUES (?,?,?,?,?,?,?)";
+        var table = ["po_master","user_id","company_id","state_id","po_number","po_amount","po_time_limit","category_id",req.body.user_id,req.body.company_id,req.body.state_id,req.body.po_number,req.body.po_amount,req.body.po_time_limit,req.body.category_id];
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
             if(err) {
