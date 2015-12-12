@@ -318,7 +318,82 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
             }
         });
     });
+    // Money
+     router.get("/money",function(req,res){
+        var query = "SELECT * FROM ??";
+        var table = ["money_master"];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "Money" : rows});
+            }
+        });
+    });
+    router.get("/money/:user_id",function(req,res){
+        var query = "SELECT * FROM ?? WHERE ??=?";
+        var table = ["money_master","user_id",req.params.user_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "Money" : rows});
+            }
+        });
+    });
+    router.get("/money/:user_id/:money_id",function(req,res){
+        var query = "SELECT * FROM ?? WHERE ??=? and ??=?";
+        var table = ["money_master","user_id",req.params.user_id,"money_id",req.params.money_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "Money" : rows});
+            }
+        });
+    });
 
+    router.post("/money",function(req,res){
+        var query = "INSERT INTO ??(??,??) VALUES (?,?)";
+        var table = ["money_master","user_id","money_name",req.body.user_id,req.body.money_name];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Money added successfully"});
+            }
+        });
+    });
+
+    router.put("/money",function(req,res){
+        var query = "UPDATE ?? SET ?? = ? WHERE ?? = ?";
+        var table = ["money_master","money_name",req.body.money_name,"money_id",req.body.money_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Money updated successfully"});
+            }
+        });
+    });
+
+    router.delete("/money/:money_id",function(req,res){
+        var query = "DELETE from ?? WHERE ??=?";
+        var table = ["money_master","money_id",req.params.money_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Money deleted successfully"});
+            }
+        });
+    });
     // POs
 
     router.post("/po",function(req,res){
