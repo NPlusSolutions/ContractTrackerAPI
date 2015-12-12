@@ -334,6 +334,85 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
         });
     });
 
+    // Incomes
+    router.get("/incomes",function(req,res){
+        var query = "SELECT * FROM ??";
+        var table = ["income_master"];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "Incomes" : rows});
+            }
+        });
+    });
+    router.get("/incomes/:user_id",function(req,res){
+        var query = "SELECT * FROM ?? WHERE ??=?";
+        var table = ["income_master","user_id",req.params.user_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "Incomes" : rows});
+            }
+        });
+    });
+    router.get("/incomes/:user_id/:income_id",function(req,res){
+        var query = "SELECT * FROM ?? WHERE ??=? and ??=?";
+        var table = ["income_master","user_id",req.params.user_id,"income_id",req.params.income_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "Incomes" : rows});
+            }
+        });
+    });
+
+    router.post("/incomes",function(req,res){
+        var query = "INSERT INTO ??(??,??) VALUES (?,?)";
+        var table = ["income_master","user_id","income_name",req.body.user_id,req.body.income_name];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Income added successfully"});
+            }
+        });
+    });
+
+    router.put("/incomes",function(req,res){
+        var query = "UPDATE ?? SET ?? = ? WHERE ?? = ?";
+        var table = ["income_master","income_name",req.body.income_name,"income_id",req.body.income_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Income updated successfully"});
+            }
+        });
+    });
+
+    router.delete("/incomes/:income_id",function(req,res){
+        var query = "DELETE from ?? WHERE ??=?";
+        var table = ["income_master","income_id",req.params.income_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Income deleted successfully"});
+            }
+        });
+    });
+
+    
+
     // States
 
      router.get("/states",function(req,res){
