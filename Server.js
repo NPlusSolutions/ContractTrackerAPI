@@ -16,8 +16,8 @@ REST.prototype.connectMysql = function() {
         connectionLimit : 100,
         host     : 'localhost',
         user     : 'root',
-        password : '',
-        database : 'contracttracker',
+        password : 'Niletree@23',
+        database : 'ContractTracker',
         debug    :  false
     });
     pool.getConnection(function(err,connection){
@@ -25,6 +25,7 @@ REST.prototype.connectMysql = function() {
           self.stop(err);
         } else {
           self.configureExpress(connection);
+          
         }
     });
 }
@@ -37,6 +38,7 @@ REST.prototype.configureExpress = function(connection) {
       app.use('/api', router);
       var rest_router = new rest(router,connection,md5);
       self.startServer();
+      console.log("Server Started");
 }
 
 REST.prototype.startServer = function() {

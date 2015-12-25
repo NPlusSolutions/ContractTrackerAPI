@@ -254,7 +254,7 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
             if(err) {
-                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+                res.json({"Error" : true, "Message" : err});
             } else {
                 res.json({"Error" : false, "Message" : "Success", "Expenses" : rows});
             }
@@ -578,6 +578,83 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
                 res.json({"Error" : true, "Message" : "Error executing MySQL query"});
             } else {
                 res.json({"Error" : false, "Message" : "State deleted successfully"});
+            }
+        });
+    });
+
+    // Items
+    router.get("/items",function(req,res){
+        var query = "SELECT * FROM ??";
+        var table = ["item_master"];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "Items" : rows});
+            }
+        });
+    });
+    router.get("/items/:user_id",function(req,res){
+        var query = "SELECT * FROM ?? WHERE ??=?";
+        var table = ["item_master","user_id",req.params.user_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "Items" : rows});
+            }
+        });
+    });
+    router.get("/items/:user_id/:item_id",function(req,res){
+        var query = "SELECT * FROM ?? WHERE ??=? and ??=?";
+        var table = ["item_master","user_id",req.params.user_id,"item_id",req.params.item_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "Items" : rows});
+            }
+        });
+    });
+
+    router.post("/items",function(req,res){
+        var query = "INSERT INTO ??(??,??) VALUES (?,?)";
+        var table = ["item_master","user_id","item_code","item_rate","description",req.body.user_id,req.body.item_code,req.body.item_rate,req.body.description];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Item added successfully"});
+            }
+        });
+    });
+
+    router.put("/items",function(req,res){
+        var query = "UPDATE ?? SET ?? = ?, ??=? WHERE ?? = ?";
+        var table = ["item_master","item_code",req.body.item_code,"item_rate",req.body.item_rate,"item_id",req.body.item_id,"description",req.body.description];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Item updated successfully"});
+            }
+        });
+    });
+
+    router.delete("/items/:item_id",function(req,res){
+        var query = "DELETE from ?? WHERE ??=?";
+        var table = ["item_master","item_id",req.params.item_id];
+        query = mysql.format(query,table);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Item deleted successfully"});
             }
         });
     });
