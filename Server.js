@@ -11,21 +11,25 @@ function REST(){
 };
 
 REST.prototype.connectMysql = function() {
-    var self = this;
+    var self = this;  
     var pool      =    mysql.createPool({
         connectionLimit : 100,
         host     : 'localhost',
         user     : 'root',
-        password : 'Niletree@23',
+        password : '',
         database : 'ContractTracker',
-        debug    :  false
+        debug    :  false,
+        useConnectionPooling : true
     });
     pool.getConnection(function(err,connection){
         if(err) {
-          self.stop(err);
+        	if(err.code === "PROTOCOL_CONNECTION_LOST") {
+				    connection.destroy();
+            self.connectMysql();
+		       }
+    			self.stop(err);
         } else {
           self.configureExpress(connection);
-          
         }
     });
 }

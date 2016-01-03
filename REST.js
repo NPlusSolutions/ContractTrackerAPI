@@ -1,4 +1,6 @@
 var mysql   = require("mysql");
+var mailer  = require("./Mailer.js");
+
 
 function REST_ROUTER(router,connection,md5) {
     var self = this;
@@ -17,6 +19,7 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
         var table = ["user","email",req.params.email,"password",req.params.password];
         query = mysql.format(query,table);
           connection.query(query,function(err,rows){
+          	connection.release();
             if(err) {
                 res.json({"Error" : true, "Message" : "Error executing MySQL query"});
             } else {
@@ -253,6 +256,7 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
         var table = ["expense_master"];
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
+        	connection.release();
             if(err) {
                 res.json({"Error" : true, "Message" : err});
             } else {
@@ -421,6 +425,33 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
                 res.json({"Error" : true, "Message" : "Error executing MySQL query"});
             } else {
                 res.json({"Error" : false, "Message" : "PO entry added successfully"});
+            }
+        });
+    });
+
+    // PO Report Company wise
+    router.get("/pocompany/:user_id",function(req,res){
+        var query = "SELECT cm.company_name,sum( pm.po_amount) as po_total , 0 as po_quantity FROM po_master pm join company_master cm on pm.company_id = cm.company_id where pm.user_id =  "+req.params.user_id+" group by cm.company_id";
+        
+        console.log(query);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "CompanyReport" : rows});
+            }
+        });
+    });
+    // PO Report Category wise
+    router.get("/pocategory/:user_id",function(req,res){
+        var query = "SELECT cm.category_name,sum( pm.po_amount) as po_total , 0 as po_quantity FROM po_master pm join category_master cm on pm.category_id = cm.category_id where pm.user_id =  "+req.params.user_id+" group by cm.category_id";
+        
+        console.log(query);
+        connection.query(query,function(err,rows){
+            if(err) {
+                res.json({"Error" : true, "Message" : "Error executing MySQL query"});
+            } else {
+                res.json({"Error" : false, "Message" : "Success", "CategoryReport" : rows});
             }
         });
     });
@@ -620,9 +651,9 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
         });
     });
 
-    router.post("/items",function(req,res){
-        var query = "INSERT INTO ??(??,??) VALUES (?,?)";
-        var table = ["item_master","user_id","item_code","item_rate","description",req.body.user_id,req.body.item_code,req.body.item_rate,req.body.description];
+     router.post("/items",function(req,res){
+        var query = "INSERT INTO ??(??,??,??,??,??) VALUES (?,?,?,?,?)";
+        var table = ["item_master","user_id","item_code","item_rate","description","po_number",req.body.user_id,req.body.item_code,req.body.item_rate,req.body.description,req.body.po_number];
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
             if(err) {
@@ -634,8 +665,8 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
     });
 
     router.put("/items",function(req,res){
-        var query = "UPDATE ?? SET ?? = ?, ??=? WHERE ?? = ?";
-        var table = ["item_master","item_code",req.body.item_code,"item_rate",req.body.item_rate,"item_id",req.body.item_id,"description",req.body.description];
+        var query = "UPDATE ?? SET ?? = ?, ??=? , ??=?, ??=?" WHERE ?? = ?";
+        var table = ["item_master","item_code",req.body.item_code,"item_rate",req.body.item_rate,"description",req.body.description","po_number",req.body.po_number",item_id",req.body.item_id];
         query = mysql.format(query,table);
         connection.query(query,function(err,rows){
             if(err) {
@@ -657,6 +688,22 @@ REST_ROUTER.prototype.handleRoutes = function(router,connection,md5) {
                 res.json({"Error" : false, "Message" : "Item deleted successfully"});
             }
         });
+    });
+
+    // Submit bill
+
+ 	router.post("/submitbill",function(req,res){
+       // params : po_number , user_id
+       var mailOptions = {
+		    from: 'Ravi Tuvar<ravituwar@gmail.com>', // sender address
+		    to: 'ravituvar@yahoo.com,ravituwar@gmail.com', // list of receivers
+		    subject: 'My Bill', // Subject line
+		    text: 'This is my Bill', // plaintext body
+		    html: '<b>This is my bill</b>' // html body
+		};
+		mailer.sendMail(mailOptions);
+        res.json({"Error" : false, "Message" : "Bill submitted successfully"});
+           
     });
 }
 
